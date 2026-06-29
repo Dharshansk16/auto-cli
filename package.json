@@ -1,0 +1,31 @@
+{
+  "name": "ai-terminal-agent",
+  "version": "0.1.0",
+  "description": "AI-powered terminal agent for macOS/Linux that turns natural language into safe shell actions",
+  "type": "module",
+  "bin": {
+    "aiagent": "./dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsc",
+    "start": "node dist/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "@google/genai": "^0.3.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "dotenv": "^17.4.2",
+    "execa": "^9.3.0",
+    "yaml": "^2.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  }
+}
