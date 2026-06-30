@@ -26,7 +26,10 @@ import type { HistoryEntry } from "../types.js";
  */
 function ensureHistoryDir(): void {
   // TODO: Implement directory creation
-  throw new Error("Not implemented");
+  const dir=join(homedir(), ".aiagent");
+  if(!existsSync(dir)){
+    mkdirSync(dir, {recursive: true});
+  }
 }
 
 /**
@@ -39,9 +42,12 @@ function ensureHistoryDir(): void {
  * 5. EDGE CASES TO HANDLE: Concurrent writes (native append is usually fine).
  * 6. SAMPLE CASE: Input `{ tool: "git_status" }` -> File gets a new line.
  */
+const HISTORY_FILE= join(homedir(), ".aiagent", "history.jsonl");
+
 export function logExecution(entry: HistoryEntry): void {
   // TODO: Implement append logic
-  throw new Error("Not implemented");
+  ensureHistoryDir();
+  appendFileSync(HISTORY_FILE, JSON.stringify(entry) + "\n");
 }
 
 /**
@@ -58,5 +64,20 @@ export function logExecution(entry: HistoryEntry): void {
  */
 export function readHistory(limit = 20): HistoryEntry[] {
   // TODO: Implement read logic
-  throw new Error("Not implemented");
+  if(!existsSync(HISTORY_FILE)){
+    return [];
+  }
+
+  const content=readFileSync(HISTORY_FILE, "utf-8");
+  const lines=content.split("\n").filter((line)=>line.trim().length>0);
+  // const entries:HistoryEntry[]=lines.map((line)=>JSON.parse(line));
+  const entries: HistoryEntry[] = lines.flatMap((line) => {
+    try {
+      return [JSON.parse(line) as HistoryEntry];
+    } catch {
+      return [];
+    }
+  });
+  return entries.slice(-limit);
+  // throw new Error("Not implemented");
 }
