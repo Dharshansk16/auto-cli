@@ -32,5 +32,42 @@ export interface RunResult {
  */
 export async function runCommand(command: string, cwd: string): Promise<RunResult> {
   // TODO: Implement execa runner logic
-  throw new Error("Not implemented");
+  console.log(chalk.cyan(`\n$ ${command}`));
+  try{
+    const result= await execa(command, {
+      shell:true,
+      cwd,
+      stdio:"inherit"
+    }); 
+
+    return {
+      exitCode: result.exitCode??0,
+      success:true
+    };
+  }catch(error:unknown){
+    if(
+      typeof error==="object" &&
+      error!==null &&
+      "exitCode" in error
+    ){
+      const execaError= error as { exitCode: number};
+      return {
+        exitCode: execaError.exitCode,
+        success:false
+      };
+    }
+
+    // OS-level errors like ENOENT (command not found)
+    console.error(chalk.red(`Execution error: ${String(error)}`));
+
+    return {
+      exitCode: null,
+      success: false,
+    };
+  }
 }
+
+
+//only for testing
+const result=await runCommand("cd", process.cwd());
+console.log(result);
