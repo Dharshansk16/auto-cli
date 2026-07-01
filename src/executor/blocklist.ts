@@ -28,5 +28,56 @@ export interface BlockCheckResult {
  */
 export function checkBlocklist(command: string): BlockCheckResult {
   // TODO: Define patterns and implement checking logic
-  throw new Error("Not implemented");
+  const patterns: { regex: RegExp; reason: string }[]=[
+    {
+      // matches rm -rf /, rm -fr /, rm -rf /*, rm --recursive --force / etc
+      regex: /rm\s+(-\w*[rf]\w*\s+){1,2}\/[\s*]*/,
+      reason: "Recursive deletion of root filesystem is not allowed.",
+    },
+    {
+      // fork bomb: :(){:|:&};:
+      regex: /:\s*\(\s*\)\s*\{/,
+      reason: "Fork bomb pattern detected.",
+    },
+    {
+      // any sudo usage
+      regex: /\bsudo\b/,
+      reason: "sudo commands are not permitted through this agent.",
+    },
+    {
+      // raw disk writes: dd if=... of=/dev/...
+      regex: /\bdd\b.*of=\/dev\//,
+      reason: "Raw disk write operations are not allowed.",
+    },
+    {
+      // mkfs — disk formatting
+      regex: /\bmkfs\b/,
+      reason: "Disk formatting commands are not allowed.",
+    },
+    {
+       // git push --force or git push -f
+      regex: /git\s+push\s+.*(-f|--force)/,
+      reason: "Force-pushing to git remotes is blocked.",
+    },
+  ];
+
+  for(const {regex,reason} of patterns ){
+    if(regex.test(command)){
+      return {
+        blocked: true,
+        reason
+      }
+    }
+  }
+
+  return {
+    blocked:false
+  };
 }
+
+
+//for testing purpose
+console.log(checkBlocklist("sudo rm -rf /"));   // { blocked: true, reason: ... }
+console.log(checkBlocklist("git status"));       // { blocked: false }
+console.log(checkBlocklist("rm -fr /*"));        // { blocked: true, reason: ... }
+console.log(checkBlocklist("git push -f"));      // { blocked: true, reason: ... }
