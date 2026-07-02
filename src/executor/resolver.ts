@@ -30,8 +30,13 @@ export class ToolValidationError extends Error {}
  * 6. SAMPLE CASE: Missing "script_name" -> Throws Error.
  */
 export function validateArgs(tool: ToolDefinition, args: Record<string, unknown>): void {
-  // TODO: Implement validation logic
-  throw new Error("Not implemented");
+  const required=tool.parameters.required ?? [];
+  for(const field of required){
+    const value=args[field];
+    if(value === undefined || value === null || value==""){
+      throw new ToolValidationError(`Missing required argument "${field}" for tool "${tool.name}".`);
+    }
+  }
 }
 
 /**
@@ -50,6 +55,42 @@ export function resolveCommand(
   args: Record<string, unknown>,
   ctx: ProjectContext
 ): ResolvedCommand {
-  // TODO: Implement resolve logic
-  throw new Error("Not implemented");
+  validateArgs(tool, args);
+  const command= tool.resolve(args,ctx);
+
+  return {
+    command,
+    safety: tool.safety,
+    toolName:tool.name
+  }
+}
+
+
+//testing purpose only
+// temporary test — delete after
+
+const mockTool: import("../types.js").ToolDefinition = {
+  name: "git_commit",
+  description: "Commits staged changes",
+  safety: "confirm",
+  parameters: {
+    type: "object",
+    properties: {
+      message: { type: "string", description: "Commit message" },
+    },
+    required: ["message"],
+  },
+  resolve: (args) => `git commit -m "${args.message}"`,
+};
+
+const mockCtx = { cwd: process.cwd() } as ProjectContext;
+
+// should resolve cleanly
+console.log(resolveCommand(mockTool, { message: "fix: update readme" }, mockCtx));
+
+// should throw ToolValidationError
+try {
+  resolveCommand(mockTool, {}, mockCtx);
+} catch (e) {
+  console.log(e instanceof ToolValidationError ? "ToolValidationError caught " : e);
 }
