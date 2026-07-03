@@ -13,3 +13,8 @@
 
 - **Engineered CLI Routing & Argument Parsing:** Integrated the `commander` framework to establish the primary application router (`cli.ts`), dynamically parsing `process.argv` to direct control flow between single-shot execution commands and the interactive REPL.
 - **Implemented Fail-Fast Security Validation:** Developed an environment validation protocol (`requireApiKey`) utilizing `dotenv` to verify API credentials prior to instantiating heavy LLM dependencies, ensuring safe and graceful process termination if credentials are missing.
+
+## Day 4: Core Orchestration Engine & Cross-Module Integration
+
+- **Architected the Core Orchestration Loop:** Engineered the primary execution pipeline (`run-turn.ts`) that manages the end-to-end conversational state machine—processing user input, parsing LLM tool calls, resolving command arguments, and triggering local shell execution.
+- **Resolved Cross-Module Type Contracts:** Diagnosed and aligned strict TypeScript interface mismatches between decoupled modules (e.g., synchronizing the AI client's generation signatures with the `ResolvedCommand` object structures), ensuring absolute type safety across the application boundary.
