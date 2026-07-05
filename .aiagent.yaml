@@ -1,0 +1,6 @@
+# Optional per-project configuration for ai-terminal-agent.
+# Copy this to ".aiagent.yaml" in your project root and customize.
+
+aliases:
+  deploy: "npm run build && npm run deploy"
+  reset-db: "npm run db:reset"

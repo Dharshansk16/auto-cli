@@ -31,5 +31,22 @@ export interface AgentConfig {
  */
 export function loadConfig(cwd: string): AgentConfig | undefined {
   // TODO: Implement YAML parsing logic
-  throw new Error("Not implemented");
+  const configPath=join(cwd, ".aiagent.yaml");
+  if(!existsSync(configPath)){
+    return undefined;
+  }
+
+  try{
+    const contents=readFileSync(configPath,"utf-8");
+    const parsed=parse(contents) as AgentConfig;
+    return parsed;
+  }
+  catch{
+    return undefined;
+  }
 }
+
+
+//temporary test code- delete later
+console.log(loadConfig(process.cwd()));   // should return the config object
+console.log(loadConfig("/tmp"));          // should return undefined (no .aiagent.yaml there)
