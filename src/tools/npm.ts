@@ -9,6 +9,8 @@
  * 6. SAMPLE CASE: Array contains object with name "run_script".
  */
 import type { ToolDefinition } from "../types.js";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 /**
  * 1. PURPOSE: Detects the appropriate package manager prefix.
@@ -21,10 +23,70 @@ import type { ToolDefinition } from "../types.js";
  * 6. SAMPLE CASE: Output: "npm run"
  */
 function detectPackageManager(): string {
-  // TODO: Implement package manager detection
-  throw new Error("Not implemented");
+  const cwd= process.cwd();
+  if (existsSync(join(cwd, "yarn.lock"))) return "yarn";
+  if (existsSync(join(cwd, "pnpm-lock.yaml"))) return "pnpm";
+  return "npm"; // Default to npm if no lock file is found
 }
 
 export const npmTools: ToolDefinition[] = [
   // TODO: Define the list of NPM tools (list_scripts, run_script, install_dependencies)
+  {
+    name: "list_scripts",
+    description: "Lists all available scripts defined in the project's package.json.",
+    parameters: {
+      type: "object",
+      properties: {},
+      required: [],
+    },
+    safety: "auto",
+    resolve: () => "cat package.json | grep -A 50 '\"scripts\"'",
+  },
+
+  {
+    name: "run_script",
+    description: "Runs a script defined in package.json using the detected package manager.",
+    parameters: {
+      type: "object",
+      properties: {
+        script_name: {
+          type: "string",
+          description: "The name of the npm script to run (e.g. 'build', 'test', 'dev').",
+        },
+      },
+      required: ["script_name"],
+    },
+    safety: "confirm",
+    resolve: (args) => {
+      const script = args.script_name as string;
+      const pm = detectPackageManager();
+      return pm === "yarn" ? `yarn ${script}` : `${pm} run ${script}`;
+    },
+  },
+
+  {
+    name: "install_dependencies",
+    description: "Installs all project dependencies using the detected package manager.",
+    parameters: {
+      type: "object",
+      properties: {},
+      required: [],
+    },
+    safety: "confirm",
+    resolve: () => {
+      const pm = detectPackageManager();
+      return pm === "yarn" ? "yarn" : `${pm} install`;
+    },
+  },
 ];
+
+
+// temporary test — delete after
+console.log(detectPackageManager());
+// expected: "npm" (since your project has package-lock.json)
+
+console.log(npmTools.map(t => t.name));
+// expected: [ 'list_scripts', 'run_script', 'install_dependencies' ]
+
+console.log(npmTools[1].resolve({ script_name: "build" }, {} as any));
+// expected: npm run build
