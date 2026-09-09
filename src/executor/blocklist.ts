@@ -27,7 +27,6 @@ export interface BlockCheckResult {
  * 6. SAMPLE CASE: "git status" -> `{ blocked: false }`.
  */
 export function checkBlocklist(command: string): BlockCheckResult {
-  // TODO: Define patterns and implement checking logic
   const patterns: { regex: RegExp; reason: string }[]=[
     {
       // matches rm -rf /, rm -fr /, rm -rf /*, rm --recursive --force / etc
@@ -76,8 +75,3 @@ export function checkBlocklist(command: string): BlockCheckResult {
 }
 
 
-//for testing purpose
-console.log(checkBlocklist("sudo rm -rf /"));   // { blocked: true, reason: ... }
-console.log(checkBlocklist("git status"));       // { blocked: false }
-console.log(checkBlocklist("rm -fr /*"));        // { blocked: true, reason: ... }
-console.log(checkBlocklist("git push -f"));      // { blocked: true, reason: ... }

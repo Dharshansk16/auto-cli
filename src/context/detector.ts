@@ -24,8 +24,9 @@ import { loadConfig } from "../config/loader.js";
  * 6. SAMPLE CASE: Mac OS -> "darwin".
  */
 function detectPlatform(): ProjectContext["platform"] {
-  // TODO: Implement platform detection
-  throw new Error("Not implemented");
+  if (process.platform === "darwin") return "darwin";
+  if (process.platform === "linux") return "linux";
+  return "other";
 }
 
 /**
@@ -40,8 +41,22 @@ function detectPlatform(): ProjectContext["platform"] {
  * 6. SAMPLE CASE: In clean repo on main -> `{ isGitRepo: true, gitBranch: "main", gitStatusSummary: "clean" }`.
  */
 async function detectGit(cwd: string): Promise<Pick<ProjectContext, "isGitRepo" | "gitBranch" | "gitStatusSummary">> {
-  // TODO: Implement git detection
-  throw new Error("Not implemented");
+  if (!existsSync(join(cwd, ".git"))) {
+    return { isGitRepo: false };
+  }
+
+  try {
+    const branchRes = await execa("git", ["branch", "--show-current"], { cwd });
+    const statusRes = await execa("git", ["status", "--short"], { cwd });
+    
+    return {
+      isGitRepo: true,
+      gitBranch: branchRes.stdout.trim() || undefined,
+      gitStatusSummary: statusRes.stdout.trim() || "clean",
+    };
+  } catch (e) {
+    return { isGitRepo: true, gitStatusSummary: "error reading git status" };
+  }
 }
 
 /**
@@ -56,8 +71,19 @@ async function detectGit(cwd: string): Promise<Pick<ProjectContext, "isGitRepo" 
  * 6. SAMPLE CASE: valid package.json -> returns `{ dev: "...", build: "..." }`.
  */
 function detectPackageJsonScripts(cwd: string): Record<string, string> | undefined {
-  // TODO: Implement package.json detection
-  throw new Error("Not implemented");
+  const pkgPath = join(cwd, "package.json");
+  if (!existsSync(pkgPath)) return undefined;
+
+  try {
+    const content = readFileSync(pkgPath, "utf-8");
+    const parsed = JSON.parse(content);
+    if (parsed.scripts && typeof parsed.scripts === "object") {
+      return parsed.scripts;
+    }
+  } catch {
+    // Ignore invalid JSON
+  }
+  return undefined;
 }
 
 /**
@@ -69,8 +95,11 @@ function detectPackageJsonScripts(cwd: string): Record<string, string> | undefin
  * 6. SAMPLE CASE: Folder has `Dockerfile` -> returns true.
  */
 function detectDocker(cwd: string): boolean {
-  // TODO: Implement docker detection
-  throw new Error("Not implemented");
+  return (
+    existsSync(join(cwd, "Dockerfile")) ||
+    existsSync(join(cwd, "docker-compose.yml")) ||
+    existsSync(join(cwd, "docker-compose.yaml"))
+  );
 }
 
 /**
@@ -85,8 +114,13 @@ function detectDocker(cwd: string): boolean {
  * 6. SAMPLE CASE: One container running -> returns ["db_1"].
  */
 async function listRunningContainers(): Promise<string[] | undefined> {
-  // TODO: Implement container listing
-  throw new Error("Not implemented");
+  try {
+    const res = await execa("docker", ["ps", "--format", "{{.Names}}"]);
+    const containers = res.stdout.split("\n").map(n => n.trim()).filter(Boolean);
+    return containers.length > 0 ? containers : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -102,8 +136,28 @@ async function listRunningContainers(): Promise<string[] | undefined> {
  * 6. SAMPLE CASE: Assembles all partial objects into one master `ProjectContext`.
  */
 export async function buildContext(cwd: string = process.cwd()): Promise<ProjectContext> {
-  // TODO: Implement buildContext logic
-  throw new Error("Not implemented");
+  const platform = detectPlatform();
+  const gitContext = await detectGit(cwd);
+  const packageJsonScripts = detectPackageJsonScripts(cwd);
+  const hasDocker = detectDocker(cwd);
+  let runningContainers: string[] | undefined = undefined;
+  
+  if (hasDocker) {
+    runningContainers = await listRunningContainers();
+  }
+
+  const agentConfig = loadConfig(cwd);
+  const customAliases = agentConfig?.aliases;
+
+  return {
+    cwd,
+    platform,
+    ...gitContext,
+    packageJsonScripts,
+    hasDocker,
+    runningContainers,
+    customAliases,
+  };
 }
 
 /**
@@ -117,6 +171,37 @@ export async function buildContext(cwd: string = process.cwd()): Promise<Project
  * 6. SAMPLE CASE: Input context with isGitRepo = true -> Output includes "Git repo: yes".
  */
 export function contextToPromptText(ctx: ProjectContext): string {
-  // TODO: Implement formatting logic
-  throw new Error("Not implemented");
+  const lines: string[] = [];
+  
+  lines.push(`Working directory: ${ctx.cwd}`);
+  lines.push(`Platform: ${ctx.platform}`);
+  
+  if (ctx.isGitRepo) {
+    lines.push(`Git repo: yes`);
+    if (ctx.gitBranch) lines.push(`Git branch: ${ctx.gitBranch}`);
+    if (ctx.gitStatusSummary) lines.push(`Git status summary:\n${ctx.gitStatusSummary}`);
+  } else {
+    lines.push(`Git repo: no`);
+  }
+  
+  if (ctx.packageJsonScripts && Object.keys(ctx.packageJsonScripts).length > 0) {
+    lines.push(`NPM Scripts available: ${Object.keys(ctx.packageJsonScripts).join(", ")}`);
+  }
+  
+  if (ctx.hasDocker) {
+    lines.push(`Docker detected: yes`);
+    if (ctx.runningContainers && ctx.runningContainers.length > 0) {
+      lines.push(`Running Docker containers: ${ctx.runningContainers.join(", ")}`);
+    } else {
+      lines.push(`Running Docker containers: none`);
+    }
+  }
+  
+  if (ctx.customAliases) {
+    const aliasStr = Object.entries(ctx.customAliases).map(([k, v]) => `${k} -> ${v}`).join(", ");
+    lines.push(`Custom aliases: ${aliasStr}`);
+  }
+  
+  return lines.join("\n");
 }
+

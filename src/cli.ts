@@ -74,14 +74,10 @@ program
       console.log(chalk.cyan("\n=== Conversation History ===\n"));
 
       history.forEach((entry, index) => {
-        // Customize these property names based on what is actually in your HistoryEntry type
-        const isUser = entry.role === "user";
-
-        if (isUser) {
-          console.log(chalk.green(`You:`), entry.content);
-        } else {
-          console.log(chalk.blue(`AI:`), entry.content);
-        }
+        console.log(chalk.gray(`[${entry.timestamp}]`));
+        console.log(chalk.blue(`Tool:`), entry.tool);
+        console.log(chalk.blue(`Command:`), entry.command);
+        console.log(chalk.gray(`Status:`), entry.success ? chalk.green("Success") : chalk.red(`Failed (Code: ${entry.exitCode})`));
         console.log(chalk.gray("---------------------------"));
       });
     } catch (error) {
@@ -109,7 +105,7 @@ program
       if (promptArgs && promptArgs.length > 0) {
         // Single-shot execution (e.g., `aiagent what is my current directory?`)
         const text = promptArgs.join(" ");
-        await runTurn(llm, context, text);
+        await runTurn(llm, context, [], text);
       } else {
         // Interactive REPL (e.g., `aiagent`)
         await startRepl(llm, context);

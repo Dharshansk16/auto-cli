@@ -30,7 +30,6 @@ function detectPackageManager(): string {
 }
 
 export const npmTools: ToolDefinition[] = [
-  // TODO: Define the list of NPM tools (list_scripts, run_script, install_dependencies)
   {
     name: "list_scripts",
     description: "Lists all available scripts defined in the project's package.json.",
@@ -81,12 +80,3 @@ export const npmTools: ToolDefinition[] = [
 ];
 
 
-// temporary test — delete after
-console.log(detectPackageManager());
-// expected: "npm" (since your project has package-lock.json)
-
-console.log(npmTools.map(t => t.name));
-// expected: [ 'list_scripts', 'run_script', 'install_dependencies' ]
-
-console.log(npmTools[1].resolve({ script_name: "build" }, {} as any));
-// expected: npm run build

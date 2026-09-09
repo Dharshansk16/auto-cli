@@ -31,7 +31,6 @@ export interface RunResult {
  * 6. SAMPLE CASE: `runCommand("ls -l", "/tmp")` -> success.
  */
 export async function runCommand(command: string, cwd: string): Promise<RunResult> {
-  // TODO: Implement execa runner logic
   console.log(chalk.cyan(`\n$ ${command}`));
   try{
     const result= await execa(command, {
@@ -68,6 +67,3 @@ export async function runCommand(command: string, cwd: string): Promise<RunResul
 }
 
 
-//only for testing
-const result=await runCommand("cd", process.cwd());
-console.log(result);

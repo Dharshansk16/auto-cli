@@ -15,7 +15,10 @@ import { dockerTools } from "./docker.js";
 import { shellTools } from "./shell.js";
 
 export const ALL_TOOLS: ToolDefinition[] = [
-  // TODO: Combine gitTools, npmTools, dockerTools, shellTools
+  ...gitTools,
+  ...npmTools,
+  ...dockerTools,
+  ...shellTools,
 ];
 
 /**
@@ -29,6 +32,5 @@ export const ALL_TOOLS: ToolDefinition[] = [
  * 6. SAMPLE CASE: Input "git_pull" -> Returns git pull ToolDefinition object.
  */
 export function findTool(name: string): ToolDefinition | undefined {
-  // TODO: Implement lookup logic
-  throw new Error("Not implemented");
+  return ALL_TOOLS.find((t) => t.name === name);
 }

@@ -25,7 +25,6 @@ import type { HistoryEntry } from "../types.js";
  * 6. SAMPLE CASE: Dir doesn't exist -> creates it.
  */
 function ensureHistoryDir(): void {
-  // TODO: Implement directory creation
   const dir=join(homedir(), ".aiagent");
   if(!existsSync(dir)){
     mkdirSync(dir, {recursive: true});
@@ -45,7 +44,6 @@ function ensureHistoryDir(): void {
 const HISTORY_FILE= join(homedir(), ".aiagent", "history.jsonl");
 
 export function logExecution(entry: HistoryEntry): void {
-  // TODO: Implement append logic
   ensureHistoryDir();
   appendFileSync(HISTORY_FILE, JSON.stringify(entry) + "\n");
 }
@@ -63,7 +61,6 @@ export function logExecution(entry: HistoryEntry): void {
  * 6. SAMPLE CASE: Input `limit=2` -> returns the array of the 2 most recent entries.
  */
 export function readHistory(limit = 20): HistoryEntry[] {
-  // TODO: Implement read logic
   if(!existsSync(HISTORY_FILE)){
     return [];
   }

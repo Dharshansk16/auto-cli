@@ -63,13 +63,8 @@ export async function runTurn(
     const response = await llm.generate(userInput, context, history, ALL_TOOLS);
     spinner.stop("Analysis complete.");
 
-    // 3. If clarification
     if (response.type === "clarification") {
-      // Note: Safely handling a minor bug in Dev A's code where 'message' was returned instead of 'question'
-      const text =
-        (response as any).message ||
-        response.question ||
-        "I am not sure how to help with that.";
+      const text = response.question || "I am not sure how to help with that.";
       console.log(chalk.blue("Assistant:"), text);
       history.push({ role: "assistant", content: text });
       return;

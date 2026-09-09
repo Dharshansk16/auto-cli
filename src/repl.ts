@@ -36,6 +36,7 @@ export async function startRepl(
   p.note("Type 'exit' or 'quit' to end the session.", "Instructions");
 
   // 2. Enter a while(true) loop
+  const history: ConversationTurn[] = [];
   while (true) {
     // 3. Use @clack/prompts text input
     const input = await p.text({
@@ -64,9 +65,7 @@ export async function startRepl(
 
     // Pass input to runTurn, awaiting its completion
     try {
-      // Note: Assuming runTurn takes (llm, context, text).
-      // Adjust the argument order here if your runTurn signature differs.
-      await runTurn(llm, context, text);
+      await runTurn(llm, context, history, text);
     } catch (error) {
       p.log.error(
         chalk.red(

@@ -30,7 +30,6 @@ export interface AgentConfig {
  * 6. SAMPLE CASE: Missing file -> Returns undefined.
  */
 export function loadConfig(cwd: string): AgentConfig | undefined {
-  // TODO: Implement YAML parsing logic
   const configPath=join(cwd, ".aiagent.yaml");
   if(!existsSync(configPath)){
     return undefined;
@@ -47,6 +46,3 @@ export function loadConfig(cwd: string): AgentConfig | undefined {
 }
 
 
-//temporary test code- delete later
-console.log(loadConfig(process.cwd()));   // should return the config object
-console.log(loadConfig("/tmp"));          // should return undefined (no .aiagent.yaml there)

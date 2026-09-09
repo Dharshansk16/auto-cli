@@ -144,7 +144,7 @@ ${userInput}
 
       // 4. If the model returns functionCalls, parse the first one and return a ToolCallResult
       const functionCall = response.functionCalls?.[0];
-      if (functionCall) {
+      if (functionCall && functionCall.name) {
         return {
           type: "tool_call",
           tool: functionCall.name,
@@ -155,7 +155,7 @@ ${userInput}
       // 5. Otherwise, parse the text response and return a ClarificationResult
       return {
         type: "clarification",
-        message:
+        question:
           response.text ||
           "Could not generate a response. Please clarify your request.",
       };
@@ -163,7 +163,7 @@ ${userInput}
       // Edge Case: Handle API errors
       return {
         type: "clarification",
-        message: `An error occurred while communicating with the AI: ${error.message}`,
+        question: `An error occurred while communicating with the AI: ${error.message}`,
       };
     }
   }
