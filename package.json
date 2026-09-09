@@ -4,7 +4,7 @@
   "description": "AI-powered terminal agent for macOS/Linux that turns natural language into safe shell actions",
   "type": "module",
   "bin": {
-    "aiagent": "./dist/cli.js"
+    "autocli": "./dist/cli.js"
   },
   "scripts": {
     "dev": "tsx src/cli.ts",

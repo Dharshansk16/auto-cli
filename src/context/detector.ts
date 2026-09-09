@@ -129,7 +129,7 @@ async function listRunningContainers(): Promise<string[] | undefined> {
  * 3. STEP-BY-STEP LOGIC:
  *    1. Call platform, git, package.json, docker detection helpers.
  *    2. If docker is found, also fetch running containers.
- *    3. Load `.aiagent.yaml` aliases using `loadConfig`.
+ *    3. Load `.autocli.yaml` aliases using `loadConfig`.
  *    4. Return combined object.
  * 4. INPUTS & OUTPUTS: Input: cwd string (defaults to process.cwd()). Output: ProjectContext.
  * 5. EDGE CASES TO HANDLE: Awaiting async calls successfully.

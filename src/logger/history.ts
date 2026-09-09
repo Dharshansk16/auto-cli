@@ -7,7 +7,7 @@
  *    - Implement read-from-file and JSON parsing logic.
  * 4. INPUTS & OUTPUTS: Functions for writing `HistoryEntry` and reading an array of `HistoryEntry`.
  * 5. EDGE CASES TO HANDLE: Missing directories, file does not exist on read.
- * 6. SAMPLE CASE: `logExecution({ ... })` appends a JSON line to `~/.aiagent/history.jsonl`.
+ * 6. SAMPLE CASE: `logExecution({ ... })` appends a JSON line to `~/.autocli/history.jsonl`.
  */
 import { existsSync, mkdirSync, appendFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -15,7 +15,7 @@ import { homedir } from "node:os";
 import type { HistoryEntry } from "../types.js";
 
 /**
- * 1. PURPOSE: Ensures the `~/.aiagent` directory exists.
+ * 1. PURPOSE: Ensures the `~/.autocli` directory exists.
  * 2. ROLE IN THE FLOW: Called right before writing a log entry.
  * 3. STEP-BY-STEP LOGIC:
  *    1. Check if history dir exists.
@@ -25,7 +25,7 @@ import type { HistoryEntry } from "../types.js";
  * 6. SAMPLE CASE: Dir doesn't exist -> creates it.
  */
 function ensureHistoryDir(): void {
-  const dir=join(homedir(), ".aiagent");
+  const dir=join(homedir(), ".autocli");
   if(!existsSync(dir)){
     mkdirSync(dir, {recursive: true});
   }
@@ -41,7 +41,7 @@ function ensureHistoryDir(): void {
  * 5. EDGE CASES TO HANDLE: Concurrent writes (native append is usually fine).
  * 6. SAMPLE CASE: Input `{ tool: "git_status" }` -> File gets a new line.
  */
-const HISTORY_FILE= join(homedir(), ".aiagent", "history.jsonl");
+const HISTORY_FILE= join(homedir(), ".autocli", "history.jsonl");
 
 export function logExecution(entry: HistoryEntry): void {
   ensureHistoryDir();
@@ -50,7 +50,7 @@ export function logExecution(entry: HistoryEntry): void {
 
 /**
  * 1. PURPOSE: Reads the most recent N lines from the history log.
- * 2. ROLE IN THE FLOW: Called by the `aiagent log` CLI command.
+ * 2. ROLE IN THE FLOW: Called by the `autocli log` CLI command.
  * 3. STEP-BY-STEP LOGIC:
  *    1. Check if file exists. Return empty array if not.
  *    2. Read file content, split by newline, filter empty.

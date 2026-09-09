@@ -9,7 +9,7 @@
  * - Handle the default action (interactive REPL or single-shot execution).
  * 4. INPUTS & OUTPUTS: Parses `process.argv`.
  * 5. EDGE CASES TO HANDLE: Missing API key.
- * 6. SAMPLE CASE: User runs `aiagent log` -> prints history. User runs `aiagent` -> starts REPL.
+ * 6. SAMPLE CASE: User runs `autocli log` -> prints history. User runs `autocli` -> starts REPL.
  */
 import "dotenv/config";
 import { Command } from "commander";
@@ -55,7 +55,7 @@ const program = new Command();
 
 // Configure the `commander` program (name, description, version).
 program
-  .name("aiagent")
+  .name("autocli")
   .description("A local CLI AI Agent powered by Gemini")
   .version("1.0.0");
 
@@ -103,11 +103,11 @@ program
 
       // 3. Route logic based on arguments
       if (promptArgs && promptArgs.length > 0) {
-        // Single-shot execution (e.g., `aiagent what is my current directory?`)
+        // Single-shot execution (e.g., `autocli what is my current directory?`)
         const text = promptArgs.join(" ");
         await runTurn(llm, context, [], text);
       } else {
-        // Interactive REPL (e.g., `aiagent`)
+        // Interactive REPL (e.g., `autocli`)
         await startRepl(llm, context);
       }
     } catch (error) {

@@ -1,5 +1,5 @@
 /**
- * 1. PURPOSE: Loads user-defined project configuration (like custom command aliases) from `.aiagent.yaml`.
+ * 1. PURPOSE: Loads user-defined project configuration (like custom command aliases) from `.autocli.yaml`.
  * 2. ROLE IN THE FLOW: Called by `detector.ts` when building the context for the LLM.
  * 3. STEP-BY-STEP LOGIC:
  *    - Define `AgentConfig` interface.
@@ -17,10 +17,10 @@ export interface AgentConfig {
 }
 
 /**
- * 1. PURPOSE: Parses `.aiagent.yaml` if it exists.
+ * 1. PURPOSE: Parses `.autocli.yaml` if it exists.
  * 2. ROLE IN THE FLOW: Helper inside detector.
  * 3. STEP-BY-STEP LOGIC:
- *    1. Check for `.aiagent.yaml` in the given `cwd`.
+ *    1. Check for `.autocli.yaml` in the given `cwd`.
  *    2. If it does not exist, return undefined.
  *    3. Read the file contents.
  *    4. Parse using YAML parser.
@@ -30,7 +30,7 @@ export interface AgentConfig {
  * 6. SAMPLE CASE: Missing file -> Returns undefined.
  */
 export function loadConfig(cwd: string): AgentConfig | undefined {
-  const configPath=join(cwd, ".aiagent.yaml");
+  const configPath=join(cwd, ".autocli.yaml");
   if(!existsSync(configPath)){
     return undefined;
   }

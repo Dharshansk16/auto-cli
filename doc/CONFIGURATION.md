@@ -4,13 +4,13 @@
 
 Every command executed by the AI agent is logged for audit purposes. You can view your execution history by running:
 ```bash
-aiagent log
+autocli log
 ```
-The raw logs are stored in JSON Lines format at `~/.aiagent/history.jsonl`.
+The raw logs are stored in JSON Lines format at `~/.autocli/history.jsonl`.
 
 ## Custom Aliases
 
-You can configure project-specific behavior by creating an `.aiagent.yaml` file in the root of your workspace.
+You can configure project-specific behavior by creating an `.autocli.yaml` file in the root of your workspace.
 
 Currently supported configurations:
 

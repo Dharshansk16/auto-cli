@@ -3,11 +3,11 @@
 Turn plain-English requests into safe, confirmed shell actions — git, npm, docker, and arbitrary commands as a fallback.
 
 ```
-aiagent "push the code"
-aiagent "start the frontend"
-aiagent "show docker logs"
-aiagent              # interactive mode
-aiagent log          # view execution history
+autocli "push the code"
+autocli "start the frontend"
+autocli "show docker logs"
+autocli              # interactive mode
+autocli log          # view execution history
 ```
 
 ## Setup
@@ -23,7 +23,7 @@ To build and link it as a global command:
 ```bash
 npm run build
 npm link
-aiagent "push the code"
+autocli "push the code"
 ```
 
 ## How it works
@@ -33,7 +33,7 @@ aiagent "push the code"
 3. The model either returns a structured tool call or a clarifying question
 4. The resolved command is checked against a hard blocklist, then run through a safety
    tier: read-only commands auto-run, everything else requires a y/n confirmation
-5. Execution output streams live; every run is logged to `~/.aiagent/history.jsonl`
+5. Execution output streams live; every run is logged to `~/.autocli/history.jsonl`
 
 See `PROJECT_DOCUMENTATION.md` and `SYSTEM_FLOW_AND_BUILD_GUIDE.md` for the full design rationale.
 
@@ -60,7 +60,7 @@ src/
 ├── context/
 │   └── detector.ts             # detects git/npm/docker state for prompting
 ├── config/
-│   └── loader.ts                # loads .aiagent.yaml per-project aliases
+│   └── loader.ts                # loads .autocli.yaml per-project aliases
 └── logger/
     └── history.ts                 # audit log
 ```

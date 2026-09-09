@@ -9,7 +9,7 @@ The AI Terminal Agent is designed to translate natural language into safe, verif
 3. **Resolution & Validation (`src/executor/resolver.ts`)**: The AI's proposed tool and arguments are validated against the defined schema in the tool registry.
 4. **Security Blocklist (`src/executor/blocklist.ts`)**: The resolved command string is checked against a hard-coded set of destructive patterns.
 5. **Execution (`src/executor/runner.ts`)**: If safe (or confirmed by the user), the command is passed to `execa` for execution with live terminal output streaming.
-6. **Logging (`src/logger/`)**: Every execution is appended to `~/.aiagent/history.jsonl` for auditability.
+6. **Logging (`src/logger/`)**: Every execution is appended to `~/.autocli/history.jsonl` for auditability.
 
 ## Directory Structure
 

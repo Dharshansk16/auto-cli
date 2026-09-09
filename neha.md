@@ -6,7 +6,7 @@ Build standalone utility files.
 ## ✅ Completed
 
 ### 📝 `src/logger/history.ts`
-- Created `~/.aiagent` automatically if missing.
+- Created `~/.autocli` automatically if missing.
 - Implemented `logExecution()` using JSONL (`history.jsonl`).
 - Implemented `readHistory(limit)` to return the last **N** entries.
 - Gracefully handles missing history files and malformed JSON lines.
